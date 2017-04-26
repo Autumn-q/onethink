@@ -14,13 +14,23 @@ class RepairController extends AdminController
     //报修列表
     public function index()
     {
-        //查出输入
-        $rows = M('Repair')->where('id>-1')->select();
-        $this->meta_title = '报修管理';
-        //分配到页面上
+        $repair = M('Repair');
+
+        // 进行分页数据查询 注意page方法的参数的前面部分是当前的页数使用 $_GET[p]获取
+        $rows = $repair->where('status>0')->order('add_time')->page($_GET['p'].',2')->select();
+        int_to_string($rows,array('status'=>array(-1=>'删除',0=>'待接收处理',1=>'正在处理',2=>'已处理')));
         $this->assign('rows',$rows);
-        //展示页面
-        $this->display();
+        // 赋值数据集
+        $count    = $repair->count();
+        // 查询满足要求的总记录数
+        $Page  = new \Think\Page($count,2);
+        // 实例化分页类 传入总记录数和每页显示的记录数
+        $show       = $Page->show();
+        // 分页显示输出
+        $this->meta_title = '报修管理';
+        $this->assign('page',$show);// 赋值分页输出
+        $this->display(); // 输出模板
+
     }
     //新增保修单
     public function add()

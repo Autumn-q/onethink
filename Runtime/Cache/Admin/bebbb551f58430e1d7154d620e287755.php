@@ -128,7 +128,7 @@
                         <td><?php echo ($row["address"]); ?></td>
                         <td><?php echo ($row["title"]); ?></td>
                         <td><?php echo (date('Y-m-d h:i:s',$row["add_time"])); ?></td>
-                        <td><?php echo ($row["status"]); ?></td>
+                        <td><?php echo ($row["status_text"]); ?></td>
                         <td>
                             <a href="<?php echo U('edit?id='.$row.id);?>" class="btn btn-info ajax-get"><?php echo ($row["status"]); ?></a>
                             <a class="text-info" href="<?php echo U('edit?id='.$row['id']);?>">编辑</a>
@@ -138,6 +138,9 @@
                 </tbody>
                 </table>
             </div>
+    <div class="page">
+        <?php echo ($page); ?>
+    </div>
     
         </div>
         <div class="cont-ft">

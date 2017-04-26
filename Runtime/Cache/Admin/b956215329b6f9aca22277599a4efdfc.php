@@ -92,13 +92,14 @@
     <div class="cf">
         <a class="btn" href="<?php echo U('add',array('pid'=>I('get.pid',0)));?>">新 增</a>
         <button class="btn ajax-post confirm" url="<?php echo U('del');?>" target-form="ids">删 除</button>
+
         <a class="btn" href="<?php echo U('import',array('pid'=>I('get.pid',0)));?>">导 入</a>
         <button class="btn list_sort" url="<?php echo U('sort',array('pid'=>I('get.pid',0)),'');?>">排序</button>
         <!-- 高级搜索 -->
         <div class="search-form fr cf">
             <div class="sleft">
                 <input type="text" name="title" class="search-input" value="<?php echo I('title');?>" placeholder="请输入菜单名称">
-                <a class="sch-btn" href="javascript:;" id="search" url="/admin.php?s=/Menu/index/pid/124.html"><i class="btn-search"></i></a>
+                <a class="sch-btn" href="javascript:;" id="search" url="/admin.php?s=/Menu/index.html"><i class="btn-search"></i></a>
             </div>
         </div>
     </div>
