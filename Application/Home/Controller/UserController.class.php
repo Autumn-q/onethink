@@ -18,7 +18,12 @@ class UserController extends HomeController {
 
 	/* 用户中心首页 */
 	public function index(){
-		
+		if(session('user_auth')){
+			echo 1;
+		}else{
+			session('call_back','User/index');
+			$this->redirect('User/login');
+		}
 	}
 
 	/* 注册页面 */
@@ -54,6 +59,7 @@ class UserController extends HomeController {
 
 	/* 登录页面 */
 	public function login($username = '', $password = '', $verify = ''){
+
 		if(IS_POST){ //登录验证
 			/* 检测验证码 */
 			if(!check_verify($verify)){
@@ -68,7 +74,13 @@ class UserController extends HomeController {
 				$Member = D('Member');
 				if($Member->login($uid)){ //登录用户
 					//TODO:跳转到登录前页面
-					$this->success('登录成功！',U('Home/Index/index'));
+					//var_dump(session('call_back'));exit;
+					if(session('call_back')){
+						$this->success('登录成功',U(session('call_back')));
+					}else{
+						$this->success('登录成功！',U('Index/index'));
+					}
+
 				} else {
 					$this->error($Member->getError());
 				}

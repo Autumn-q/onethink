@@ -17,15 +17,32 @@ class ArticleController extends HomeController {
 
     /* 文档模型频道页 */
 	public function index(){
-		/* 分类信息 */
-		$category = $this->category();
 
-		//频道页只显示模板，默认不读取任何内容
-		//内容可以通过模板标签自行定制
-
-		/* 模板赋值并渲染模板 */
-		$this->assign('category', $category);
-		$this->display($category['template_index']);
+		//查询小区通知文章
+		$rows = D('Document')->where('category_id=40')->select();
+		//循环遍历赋值
+		foreach($rows as &$row){
+			$list = D('picture')->find($row['cover_id']);
+			$row['url'] = $list['path'];
+		}
+		//分配数据
+		$this->assign('rows',$rows);
+		//展示页面
+		$this->display();
+	}
+	public function content(){
+		//实例对象,查出数据内容和分类
+		$row = D('Document')->find(I('id'));
+		$result = D('Document_article')->find(I('id'));
+		//根据查出的数据中的uid查出发布信息的用户
+		$rs = D('Member')->find($row['uid']);
+		//赋值
+		$row['content'] = $result['content'];
+		$row['name']=$rs['nickname'];
+		//分配数据
+		$this->assign('row',$row);
+		//展示页面
+		$this->display('content');
 	}
 
 	/* 文档模型列表页 */
@@ -45,6 +62,7 @@ class ArticleController extends HomeController {
 		$this->assign('list', $list);
 		$this->display($category['template_lists']);
 	}
+
 
 	/* 文档模型详情页 */
 	public function detail($id = 0, $p = 1){

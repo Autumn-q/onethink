@@ -17,7 +17,7 @@ class RepairController extends AdminController
         $repair = M('Repair');
 
         // 进行分页数据查询 注意page方法的参数的前面部分是当前的页数使用 $_GET[p]获取
-        $rows = $repair->where('status>0')->order('add_time')->page($_GET['p'].',2')->select();
+        $rows = $repair->where('status>=0')->order('add_time')->page($_GET['p'].',2')->select();
         int_to_string($rows,array('status'=>array(-1=>'删除',0=>'待接收处理',1=>'正在处理',2=>'已处理')));
         $this->assign('rows',$rows);
         // 赋值数据集
@@ -44,10 +44,10 @@ class RepairController extends AdminController
 
             if($data){
 
-                $char = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                /*$char = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 //打断随机字符串
                 $char = str_shuffle($char);
-                $data['sn']='IT'.rand(1000,9999).substr($char,0,3).date('Ym').substr($char,0,5);
+                $data['sn']='IT'.rand(1000,9999).substr($char,0,3).date('Ym').substr($char,0,5);*/
 
                 $id = $repair->add();
                 if($id){
@@ -98,10 +98,11 @@ class RepairController extends AdminController
         $map = ['id'=>['in',$id]];
         //$map = array('id' => array('in', $id) );
 
-        if(M('Repair')->where($map)->delete()){
-            $this->success('删除成功');
-        }else{
-            $this->error('删除失败');
-        }
+            if(M('Repair')->where($map)->save(['status'=>-1])){
+                $this->success('删除成功');
+            }else{
+                $this->error('删除失败');
+            }
+
     }
 }

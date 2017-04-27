@@ -122,7 +122,7 @@
                 <tbody>
                 <?php if(is_array($rows)): $i = 0; $__LIST__ = $rows;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$row): $mod = ($i % 2 );++$i;?><tr>
                         <td><input class="ids row-selected" type="checkbox" name="id[]" id="" value="<?php echo ($row['id']); ?>"> </td>
-                        <td><?php echo ($channel["sn"]); ?></td>
+                        <td><?php echo ($row["sn"]); ?></td>
                         <td><?php echo ($row["name"]); ?></td>
                         <td><?php echo ($row["tel"]); ?></td>
                         <td><?php echo ($row["address"]); ?></td>
@@ -130,7 +130,7 @@
                         <td><?php echo (date('Y-m-d h:i:s',$row["add_time"])); ?></td>
                         <td><?php echo ($row["status_text"]); ?></td>
                         <td>
-                            <a href="<?php echo U('edit?id='.$row.id);?>" class="btn btn-info ajax-get"><?php echo ($row["status"]); ?></a>
+                            <!--<a href="<?php echo U('edit?id='.$row.id);?>" class="btn btn-info ajax-get"><?php echo ($row["status"]); ?></a>-->
                             <a class="text-info" href="<?php echo U('edit?id='.$row['id']);?>">编辑</a>
                             <a class="ajax-get" href="<?php echo U('del?id='.$row['id']);?>">删除</a>
                         </td>
