@@ -16,14 +16,18 @@ use User\Api\UserApi;
  */
 class UserController extends HomeController {
 
+	public function test(){
+		echo 1;
+	}
 	/* 用户中心首页 */
 	public function index(){
-		if(session('user_auth')){
+		if(is_login()){
 			echo 1;
 		}else{
 			session('call_back','User/index');
 			$this->redirect('User/login');
 		}
+
 	}
 
 	/* 注册页面 */

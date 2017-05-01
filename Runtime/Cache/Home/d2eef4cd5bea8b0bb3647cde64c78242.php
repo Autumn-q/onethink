@@ -58,29 +58,22 @@
 	<!-- 主体 -->
 	
     <div class="container-fluid">
-        <table class="table table-hover table-border">
-            <tr>
-                <th>报修人</th>
-                <th>电话</th>
-                <th>地址</th>
-                <th>报修时间</th>
-                <th>状态</th>
-                <th>操作</th>
-            </tr>
-            <?php if(is_array($rows)): $i = 0; $__LIST__ = $rows;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$row): $mod = ($i % 2 );++$i;?><tr>
-                <td><?php echo ($row["name"]); ?></td>
-                <td><?php echo ($row["tel"]); ?></td>
-                <td><?php echo ($row["address"]); ?></td>
-                <td><?php echo date('Y-m-d H:i:s',$row['add_time']);?></td>
-                <td><?php echo ($row["status_text"]); ?></td>
-                <td>
-                    <a class="text-info" href="<?php echo U('edit?id='.$row['id']);?>">编辑</a>
-                    <a class="ajax-get" href="<?php echo U('del?id='.$row['id']);?>">删除</a>
-                </td>
-            </tr><?php endforeach; endif; else: echo "" ;endif; ?>
-        </table>
+        <form action="<?php echo U();?>" method="post">
+            <div class="form-group">
+                <label>您的姓名(用户名):</label>
+                <input type="text" name="name"  class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>您的电话:</label>
+                <input type="text" name="tel" value="<?php echo ($row["tel"]); ?>" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="hidden" name="action_id" value="<?php echo ($id); ?>">
+                <button class="btn btn-primary onlineBtn">确认提交</button>
+            </div>
+        </form>
     </div>
-</div>
+    </div>
 
 	<!-- /主体 -->
 

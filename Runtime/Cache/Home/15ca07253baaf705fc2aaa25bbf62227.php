@@ -85,7 +85,7 @@
             $(".get_more").click(function(){
                 //设置默认页
                 //发送ajax请求
-                $.post("<?php echo U('index');?>",{p:p+1},function(data){
+                $.post("<?php echo U('businessList');?>",{p:p+1},function(data){
                     //判断是否有值
                     if(data.status == 1){
                         p++;

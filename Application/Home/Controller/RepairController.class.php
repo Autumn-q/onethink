@@ -14,17 +14,21 @@ class RepairController extends HomeController
     //报修列表
     public function index()
     {
+        //获取session中的用户数据
         $user_auth = session('user_auth');
         $name = $user_auth['username'];
+        //使用用户名去查报修单
         $rows = M('Repair')->where(["status>=0","name"=>$name])->select();
         int_to_string($rows,array('status'=>array(-1=>'删除',0=>'待接收处理',1=>'正在处理',2=>'已处理')));
+        //分配数据
         $this->assign('rows',$rows);
         $this->display();
     }
     //新增保修单
     public function add()
     {
-        if(session('user_auth')){
+
+        if(is_login()){
             //判断提交方式
             if(IS_POST){
                 //实例对象
@@ -33,12 +37,7 @@ class RepairController extends HomeController
                 $data = $repair->create();
 
                 if($data){
-
-                    /*$char = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                    //打断随机字符串
-                    $char = str_shuffle($char);
-                    $data['sn']='IT'.rand(1000,9999).substr($char,0,3).date('Ym').substr($char,0,5);*/
-
+                    //保存
                     $id = $repair->add();
                     if($id){
                         $this->success('报修成功',U('index'));
@@ -64,8 +63,10 @@ class RepairController extends HomeController
         if(IS_POST){
             //实例对象
             $repair = D('Repair');
+            //接收数据并验证
             $data = $repair->create();
             if($data){
+                //保存
                 $id = $repair->save();
                 if($id){
                     $this->success('修改成功',U('index'));
@@ -92,11 +93,13 @@ class RepairController extends HomeController
         }
         $map = ['id'=>['in',$id]];
         //$map = array('id' => array('in', $id) );*/
+        //获取要逻辑删除的id
         $id = I('id');
         $model = M('Repair');
         $repair = $model->find($id);
+        //状态该为-1
         $repair['status'] = -1;
-
+        //保存并判断是否删除成功
         if($model->save($repair)){
             $this->success('删除成功');
         }else{

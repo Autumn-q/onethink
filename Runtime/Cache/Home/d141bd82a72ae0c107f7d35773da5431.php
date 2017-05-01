@@ -57,22 +57,16 @@
 	
 	<!-- 主体 -->
 	
-        <div class="boxbox">
-            <?php if(is_array($rows)): $i = 0; $__LIST__ = $rows;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$row): $mod = ($i % 2 );++$i;?><div class="row noticeList">
-                    <a href="<?php echo ($row["url"]); ?>">
-                        <div class="col-xs-2">
-                            <img class="noticeImg" src="<?php echo ($row["path"]); ?>" />
-                        </div>
-                        <div class="col-xs-10">
-                            <p class="title"><?php echo ($row["title"]); ?></p>
-                            <p class="intro"><?php echo ($row["description"]); ?></p>
-                            <p class="info">浏览: <?php echo ($row["view"]); ?> <span class="pull-right"><?php echo ($row['create_time']); ?></span> </p>
-                        </div>
-                    </a>
-                </div><?php endforeach; endif; else: echo "" ;endif; ?>
+    <div class="container-fluid">
+        <div class="blank"></div>
+        <h3 class="noticeDetailTitle"><strong><?php echo ($row["title"]); ?></strong></h3>
+        <div class="noticeDetailInfo">发布者:<?php echo ($row["name"]); ?>小区物管</div>
+        <div class="noticeDetailInfo">发布时间：<?php echo date('Y-m-d H:i:s',$row['create_time']);?></div>
+        <div class="noticeDetailContent">
+            <?php echo ($row["content"]); ?>
         </div>
-    <div class="text-center">
-        <button class="btn btn-info get_more">获取更多!~~~~</button>
+        <input class="value" type="hidden" value="<?php echo ($row['id']); ?>"/>
+        <button class="area">点击报名</button>
     </div>
 
 	<!-- /主体 -->
@@ -81,37 +75,20 @@
 	
     <script type="application/javascript">
         $(function(){
-            var p = 1;
-            $(".get_more").click(function(){
-                //设置默认页
-                //发送ajax请求
-                $.post("<?php echo U('index');?>",{p:p+1},function(data){
-                    //判断是否有值
-                    if(data.status == 1){
-                        p++;
-                        var html = '';
-                        //循环出数据
-                        $(data.info).each(function(i,e){
-                            html += '<div class="row noticeList">\
-                                    <a href="'+ e.url+'">\
-                                            <div class="col-xs-2">\
-                                            <img class="noticeImg" src="'+ e.path+'" />\
-                                            </div>\
-                                            <div class="col-xs-10">\
-                                            <p class="title">'+ e.title+'</p>\
-                                <p class="intro">'+ e.description+'</p>\
-                            <p class="info">浏览:'+ e.view+'  <span class="pull-right">'+ e.create_time+'</span> </p>\
-                </div>\
-                </a>\
-                </div>';
-                            $('.boxbox').append(html);
-                        });
-                    }else{
-                        alert('没有更多信息了');
-                    }
-                });
-            });
+            var id = $(".value").val();
 
+           $(".area").click(function(){
+               $.post("<?php echo U('AreaAction/add');?>",{'id':id},function(data){
+                   if(data.info == '还未登陆'){
+                       if(confirm('还未登陆,确定登录')){
+                           window.location = "<?php echo U('User/login');?>"
+                       }
+                   }else{
+                       alert(data.info);
+                   }
+
+            });
+           });
         });
     </script>
 

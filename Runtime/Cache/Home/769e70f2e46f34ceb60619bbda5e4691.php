@@ -13,6 +13,7 @@
 
         <!-- Bootstrap -->
         <link href="/Public/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <script src="/Public/static/bootstrap/js/jquery-1.11.2.min.js"></script>
         <link href="/Public/Home/css/style.css" rel="stylesheet">
 
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -88,7 +89,7 @@
                         </a>
                     </div>
                     <div class="col-xs-4">
-                        <a href="notice.html">
+                        <a href="<?php echo U('Article/businessList');?>">
                             <div class="indexLabel label-success">
                                 <span class="glyphicon glyphicon-briefcase"></span><br/>
                                 商家活动
@@ -104,7 +105,7 @@
                         </a>
                     </div>
                     <div class="col-xs-4">
-                        <a href="notice.html">
+                        <a href="<?php echo U('Article/actionIndex');?>">
                             <div class="indexLabel label-default">
                                 <span class="glyphicon glyphicon-apple"></span><br/>
                                 小区活动
@@ -121,9 +122,10 @@
 	<!-- 底部 -->
 	
 
+
+
     </div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="../jquery-1.11.2.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/Public/static/bootstrap/js/bootstrap.min.js"></script>
     </body>

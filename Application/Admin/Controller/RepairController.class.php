@@ -99,6 +99,8 @@ class RepairController extends AdminController
         //$map = array('id' => array('in', $id) );
 
             if(M('Repair')->where($map)->save(['status'=>-1])){
+                //记录行为
+                action_log('update_repair', 'repair', $id, UID);
                 $this->success('删除成功');
             }else{
                 $this->error('删除失败');

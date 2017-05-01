@@ -15,24 +15,37 @@ namespace Home\Controller;
  */
 class ArticleController extends HomeController {
 
-    /* 文档模型频道页 */
+    //小区通知
 	public function index(){
 
 		//查询小区通知文章
-		$rows = D('Document')->where('category_id=40')->select();
+		$rows = D('Document')->where('category_id=40')->page(I('p',1),C('LIST_ROWS'))->select();
 		//循环遍历赋值
 		foreach($rows as &$row){
-			$list = D('picture')->find($row['cover_id']);
-			$row['url'] = $list['path'];
+			$row['path'] = get_cover($row['cover_id'],'path');
+			$row['create_time'] = date('Y-m-d H:i:s',$row['create_time']);
+			$row['url'] = U('Article/content',['id'=>$row['id']]);
+		}
+		//判断是否为ajax请求
+		if(IS_AJAX){
+			if(empty($rows)){
+				$this->error('没有数据');
+			}else{
+				$this->success($rows);
+			}
 		}
 		//分配数据
 		$this->assign('rows',$rows);
 		//展示页面
 		$this->display();
 	}
+	//小区通知内容
 	public function content(){
-		//实例对象,查出数据内容和分类
+		//给字段自增1
+		D('Document')->where(['id'=>I('id')])->setInc('view',1);
 		$row = D('Document')->find(I('id'));
+
+
 		$result = D('Document_article')->find(I('id'));
 		//根据查出的数据中的uid查出发布信息的用户
 		$rs = D('Member')->find($row['uid']);
@@ -44,89 +57,85 @@ class ArticleController extends HomeController {
 		//展示页面
 		$this->display('content');
 	}
-
-	/* 文档模型列表页 */
-	public function lists($p = 1){
-		/* 分类信息 */
-		$category = $this->category();
-
-		/* 获取当前分类列表 */
-		$Document = D('Document');
-		$list = $Document->page($p, $category['list_row'])->lists($category['id']);
-		if(false === $list){
-			$this->error('获取列表数据失败！');
+	//小区活动
+	public function actionIndex(){
+		//查询小区通知文章
+		$rows = D('Document')->where(['category_id'=>39,'status'=>2])->page(I('p',1),C('LIST_ROWS'))->select();
+		//循环遍历赋值
+		foreach($rows as &$row){
+			$row['path'] = get_cover($row['cover_id'],'path');
+			$row['create_time'] = date('Y-m-d H:i:s',$row['create_time']);
+			$row['url'] = U('Article/actionContent',['id'=>$row['id']]);
 		}
-
-		/* 模板赋值并渲染模板 */
-		$this->assign('category', $category);
-		$this->assign('list', $list);
-		$this->display($category['template_lists']);
-	}
-
-
-	/* 文档模型详情页 */
-	public function detail($id = 0, $p = 1){
-		/* 标识正确性检测 */
-		if(!($id && is_numeric($id))){
-			$this->error('文档ID错误！');
-		}
-
-		/* 页码检测 */
-		$p = intval($p);
-		$p = empty($p) ? 1 : $p;
-
-		/* 获取详细信息 */
-		$Document = D('Document');
-		$info = $Document->detail($id);
-		if(!$info){
-			$this->error($Document->getError());
-		}
-
-		/* 分类信息 */
-		$category = $this->category($info['category_id']);
-
-		/* 获取模板 */
-		if(!empty($info['template'])){//已定制模板
-			$tmpl = $info['template'];
-		} elseif (!empty($category['template_detail'])){ //分类已定制模板
-			$tmpl = $category['template_detail'];
-		} else { //使用默认模板
-			$tmpl = 'Article/'. get_document_model($info['model_id'],'name') .'/detail';
-		}
-
-		/* 更新浏览数 */
-		$map = array('id' => $id);
-		$Document->where($map)->setInc('view');
-
-		/* 模板赋值并渲染模板 */
-		$this->assign('category', $category);
-		$this->assign('info', $info);
-		$this->assign('page', $p); //页码
-		$this->display($tmpl);
-	}
-
-	/* 文档分类检测 */
-	private function category($id = 0){
-		/* 标识正确性检测 */
-		$id = $id ? $id : I('get.category', 0);
-		if(empty($id)){
-			$this->error('没有指定文档分类！');
-		}
-
-		/* 获取分类信息 */
-		$category = D('Category')->info($id);
-		if($category && 1 == $category['status']){
-			switch ($category['display']) {
-				case 0:
-					$this->error('该分类禁止显示！');
-					break;
-				//TODO: 更多分类显示状态判断
-				default:
-					return $category;
+		//判断是否为ajax请求
+		if(IS_AJAX){
+			if(empty($rows)){
+				$this->error('没有数据');
+			}else{
+				$this->success($rows);
 			}
-		} else {
-			$this->error('分类不存在或被禁用！');
 		}
+		//分配数据
+		$this->assign('rows',$rows);
+		//展示页面
+		$this->display();
+	}
+	//小区活动内容
+	public function actionContent(){
+		//给字段自增1
+		D('Document')->where(['id'=>I('id')])->setInc('view',1);
+		$row = D('Document')->find(I('id'));
+		$result = D('Document_article')->find(I('id'));
+		//根据查出的数据中的uid查出发布信息的用户
+		$rs = D('Member')->find($row['uid']);
+		//赋值
+		$row['content'] = $result['content'];
+		$row['name']=$rs['nickname'];
+		//分配数据
+		$this->assign('row',$row);
+		//展示页面
+		$this->display('actionContent');
 	}
 
+	//商家活动列表
+	public function businessList()
+	{
+		//查询小区通知文章
+		$rows = D('Document')->where(['category_id'=>42,'status'=>2])->page(I('p',1),C('LIST_ROWS'))->select();
+		//循环遍历赋值
+		foreach($rows as &$row){
+			$row['path'] = get_cover($row['cover_id'],'path');
+			$row['create_time'] = date('Y-m-d H:i:s',$row['create_time']);
+			$row['url'] = U('Article/businessContent',['id'=>$row['id']]);
+		}
+		//判断是否为ajax请求
+		if(IS_AJAX){
+			if(empty($rows)){
+				$this->error('没有数据');
+			}else{
+				$this->success($rows);
+			}
+		}
+		//分配数据
+		$this->assign('rows',$rows);
+		//展示页面
+		$this->display();
+	}
+	//商家活动内容
+	public function businessContent()
+	{
+		//给字段自增1
+		D('Document')->where(['id'=>I('id')])->setInc('view',1);
+		$row = D('Document')->find(I('id'));
+		$result = D('Document_article')->find(I('id'));
+		//根据查出的数据中的uid查出发布信息的用户
+		$rs = D('Member')->find($row['uid']);
+		//赋值
+		$row['content'] = $result['content'];
+		$row['name']=$rs['nickname'];
+		//分配数据
+		$this->assign('row',$row);
+		//展示页面
+		$this->display('businessContent');
+	}
 }
