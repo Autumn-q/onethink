@@ -1,0 +1,52 @@
+<extend name="Base/common"/>
+<block name="content">
+    <div class="container-fluid">
+        <div class="blank"></div>
+        <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
+            <ul id="myTabs" class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">租</a></li>
+                <li role="presentation"><a href="#profile" role="tab" id="profile-tab" data-toggle="tab" aria-controls="profile">售</a></li>
+            </ul>
+            <div id="myTabContent" class="tab-content">
+                <div role="tabpanel" class="tab-pane fade in active" id="home" aria-labelledby="home-tab">
+                    <p class="text-danger">免费提供小区内的租房信息</p>
+                    <div class="row">
+                        <volist name="rows" id="row">
+                            <div class="col-xs-6 col-md-4">
+                                <div class="thumbnail">
+                                    <img src="{$row.path}" alt="...">
+                                    <div class="caption">
+                                        <h4>{$row.title}</h4>
+                                        <p class="text-danger">{$row.description}</p>
+                                        <p><a href="{$row.url}" class="btn btn-danger zushouBtn">详细信息</a> </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </volist>
+                    </div>
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="profile" aria-labelledby="profile-tab">
+                    <div class="tab-pane fade in active" id="home" aria-labelledby="home-tab">
+                        <p class="text-danger">免费提供小区内的二手房信息</p>
+                        <div class="row">
+                            <volist name="rs" id="r">
+                                <div class="col-xs-6 col-md-4">
+                                    <div class="thumbnail">
+                                        <img src="{$r.path}">
+                                        <div class="caption">
+                                            <h4>{$r.title}</h4>
+                                            <p class="text-danger">{$r.description}</p>
+                                            <p><a href="{$r.url}" class="btn btn-danger zushouBtn">详细信息</a> </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </volist>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</block>

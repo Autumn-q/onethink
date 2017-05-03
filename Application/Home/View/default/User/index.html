@@ -1,0 +1,50 @@
+<extend name="Base/common"/>
+<block name="content">
+    <div class="container">
+        <div class="blank"></div>
+        <div class="row">
+            <div class="col-xs-3">
+                <img src="../image/5.png" width="60" height="60" />
+            </div>
+            <div class="col-xs-9">
+                {$row.nickname}<br/>
+                北大花园小区<br/>
+                积分:<span class="text-danger">{$row.score}</span>
+                <input class="value" type="hidden" name="id" value="{$row.uid}">
+                <a href="javascript:;" class="sign">签到</a>
+            </div>
+        </div>
+        <div class="blank"></div>
+        <div class="row text-center myLabel">
+            <div class="col-xs-4 label-danger"><a href="{:U('')}"><span class="iconfont">&#xe60b;</span>我的资料</a></div>
+            <div class="col-xs-4 label-success"><a href="{:U('repair?name='.$row['nickname'])}"><span class="iconfont">&#xe609;</span>我的报修</a></div>
+            <div class="col-xs-4 label-primary"><a href="{:U('action?id='.$row['uid'])}"><span class="iconfont">&#xe606;</span>报名的活动</a></div>
+        </div>
+        <div class="blank"></div>
+        <div>
+            <ul class="list-group fuwuList">
+                <li class="list-group-item"><a href="diaochawenjuan.html" class="text-danger"><span class="iconfont">&#xe60a;</span>我的缴费账单</a> </li>
+                <li class="list-group-item"><a href="yezhurenzheng.html" class="text-info"><span class="iconfont">&#xe608;</span>我的物业通知</a></li>
+                <li class="list-group-item"><a href="yezhurenzheng.html" class="text-info"><span class="iconfont">&#xe607;</span>我的水电气使用</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+</block>
+<block name="script">
+    <script type="application/javascript">
+        $(function(){
+        var uid = $(".value").val();
+            //给签到增加一个点击事件
+           $(".sign").click(function(){
+               $.post("{:U('User/sign')}",{'uid':uid},function(data){
+                   if(data.stauts == 1){
+                       window.location = "{:U('User/index')}";
+                   }else{
+                       alert(data.info);
+                   }
+               })
+           });
+        });
+    </script>
+</block>

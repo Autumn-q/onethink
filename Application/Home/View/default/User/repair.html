@@ -1,0 +1,22 @@
+<table class="table table-hover table-bordered">
+    <tr>
+        <th>报修单号</th>
+        <th>报修人</th>
+        <th>电话</th>
+        <th>地址</th>
+        <th>问题</th>
+        <th>报修时间</th>
+        <th>状态</th>
+    </tr>
+    <volist name="rows" id="row">
+        <tr>
+            <td>{$row.sn}</td>
+            <td>{$row.name}</td>
+            <td>{$row.tel}</td>
+            <td>{$row.address}</td>
+            <td>{$row.problem}</td>
+            <td>{:date('Y-m-d H:i:s',$row['add_time'])}</td>
+            <td>{$row.status_text}</td>
+        </tr>
+    </volist>
+</table>

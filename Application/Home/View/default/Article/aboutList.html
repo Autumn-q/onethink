@@ -1,0 +1,59 @@
+<extend name="Base/common"/>
+<block name="content">
+        <div class="boxbox">
+            <volist name="rows" id="row">
+                <div class="row noticeList">
+                    <a href="{$row.url}">
+                        <div class="col-xs-2">
+                            <img class="noticeImg" src="{$row.path}" />
+                        </div>
+                        <div class="col-xs-10">
+                            <p class="title">{$row.title}</p>
+                            <p class="intro">{$row.description}</p>
+                            <p class="info">浏览: {$row.view} <span class="pull-right">{$row['create_time']}</span> </p>
+                        </div>
+                    </a>
+                </div>
+            </volist>
+        </div>
+    <div class="text-center">
+        <button class="btn btn-info get_more">获取更多!~~~~</button>
+    </div>
+</block>
+<block name="script">
+    <script type="application/javascript">
+        $(function(){
+            var p = 1;
+            $(".get_more").click(function(){
+                //设置默认页
+                //发送ajax请求
+                $.post("{:U('businessList')}",{p:p+1},function(data){
+                    //判断是否有值
+                    if(data.status == 1){
+                        p++;
+                        var html = '';
+                        //循环出数据
+                        $(data.info).each(function(i,e){
+                            html += '<div class="row noticeList">\
+                                    <a href="'+ e.url+'">\
+                                            <div class="col-xs-2">\
+                                            <img class="noticeImg" src="'+ e.path+'" />\
+                                            </div>\
+                                            <div class="col-xs-10">\
+                                            <p class="title">'+ e.title+'</p>\
+                                <p class="intro">'+ e.description+'</p>\
+                            <p class="info">浏览:'+ e.view+'  <span class="pull-right">'+ e.create_time+'</span> </p>\
+                </div>\
+                </a>\
+                </div>';
+                            $('.boxbox').append(html);
+                        });
+                    }else{
+                        alert('没有更多信息了');
+                    }
+                });
+            });
+
+        });
+    </script>
+</block>

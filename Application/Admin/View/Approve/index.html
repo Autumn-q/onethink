@@ -1,0 +1,54 @@
+<extend name="Public/base"/>
+<block name="body">
+    <!-- 标题栏 -->
+    <div class="main-title">
+        <h2>业主认证审核</h2>
+    </div>
+    <!-- 数据列表 -->
+    <div class="data-table table-striped">
+        <table class="">
+            <thead>
+            <tr>
+                <th class="row-selected row-selected"><input class="check-all" type="checkbox"/></th>
+                <th class="">认证id</th>
+                <th class="">姓名</th>
+                <th class="">业主名</th>
+                <th class="">关系</th>
+                <th class="">房间号</th>
+                <th class="">电话</th>
+                <th class="">身份证</th>
+                <th class="">状态</th>
+                <th class="">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <volist name="rows" id="row">
+                <tr>
+                    <td><input class="ids row-selected" type="checkbox" name="id[]" id="" value="{$row['id']}"> </td>
+                    <td>{$row.id}</td>
+                    <td>{$row.name}</td>
+                    <td>{$row.nickname}</td>
+                    <td>{$row.relation_text}</td>
+                    <td>{$row.sn}</td>
+                    <td>{$row.tel}</td>
+                    <td>{$row.num}</td>
+                    <td>{$row.status_text}</td>
+                    <td>
+                        <!--<a href="{:U('edit?id='.$row.id)}" class="btn btn-info ajax-get">{$row.status}</a>&ndash;&gt;-->
+                        <a class="text-info btn btn-info" href="{:U('edit',(['id'=>$row['id'],'status'=>$row['status']]))}">
+                            <if condition="$row['status']==1">通过审核
+                                <elseif condition="$row['status']==2"/>已审核
+                                <else/>已删除
+                            </if></a>
+                        <input type="hidden" name="status" value="{$row.status}" >
+                        <a class="ajax-get" href="{:U('del?id='.$row['id'])}">删除</a>
+                    </td>
+                </tr>
+            </volist>
+            </tbody>
+        </table>
+    </div>
+<div class="page">
+    {$page}
+</div>
+</block>
