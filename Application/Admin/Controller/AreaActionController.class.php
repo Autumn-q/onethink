@@ -13,6 +13,7 @@ use Think\Think;
 
 class AreaActionController extends AdminController
 {
+    //小区活动通知管理
     public function index(){
         $rows = D('Document')->where(['status>0','category_id'=>39])->page($_GET['p'],C('LIST_ROWS'))->select();
         int_to_string($rows,['status'=>['0'=>'删除','1'=>'待审核',2=>'已审核']]);
@@ -60,6 +61,7 @@ class AreaActionController extends AdminController
             $this->error('删除失败');
         }
     }
+    //小区活动报名管理
     public function row(){
         $rows = D('Areaaction')->where(['status>0'])->page($_GET['p'],C('LIST_ROWS'))->select();
         int_to_string($rows,['status'=>['0'=>'删除','1'=>'待审核',2=>'已审核']]);

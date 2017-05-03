@@ -38,10 +38,10 @@
     <nav class="navbar navbar-default navbar-fixed-bottom">
         <div class="container-fluid text-center">
             <div class="col-xs-3">
-                <p class="navbar-text"><a href="index.html" class="navbar-link">首页</a></p>
+                <p class="navbar-text"><a href="<?php echo U('Index/index');?>" class="navbar-link">首页</a></p>
             </div>
             <div class="col-xs-3">
-                <p class="navbar-text"><a href="fuwu.html" class="navbar-link">服务</a></p>
+                <p class="navbar-text"><a href="<?php echo U('Server/index');?>" class="navbar-link">服务</a></p>
             </div>
             <div class="col-xs-3">
                 <p class="navbar-text"><a href="faxian.html" class="navbar-link">发现</a></p>
@@ -97,7 +97,7 @@
                         </a>
                     </div>
                     <div class="col-xs-4">
-                        <a href="zushou.html">
+                        <a href="<?php echo U('Article/zushouList');?>">
                             <div class="indexLabel label-primary">
                                 <span class="glyphicon glyphicon-usd"></span><br/>
                                 小区租售

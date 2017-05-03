@@ -8,7 +8,9 @@
 // +----------------------------------------------------------------------
 
 namespace Home\Controller;
+use EasyWeChat\Foundation\Application;
 use User\Api\UserApi;
+require 'vendor/autoload.php';
 
 /**
  * 用户控制器
@@ -16,16 +18,46 @@ use User\Api\UserApi;
  */
 class UserController extends HomeController {
 
-	public function test(){
-		echo 1;
-	}
+
 	/* 用户中心首页 */
 	public function index(){
 		if(is_login()){
-			echo 1;
+			//查出数据
+			$user = session('user_auth');
+			$row = D('Member')->where(['uid'=>$user['uid']])->find();
+			$this->assign('row',$row);
+			$this->display();
 		}else{
 			session('call_back','User/index');
 			$this->redirect('User/login');
+		}
+
+	}
+	//签到
+	public function sign($uid=1){
+
+		//拼接名字
+		$key = ACTION_NAME.MODULE_NAME.CONTROLLER_NAME.$uid;
+		//配置参数
+		S(array(
+				'type'=>'memcache',
+				'host'=>'127.0.0.1',
+				'port'=>'11211',
+				'prefix'=>'think',
+				'expire'=>3600*24)
+		);
+		//查看当前是否有这个缓存
+		$sign = S($key);
+		if(!$sign){
+			//生成随机积分
+			$rand = rand(10,20);
+
+			D('Member')->where(['uid'=>$uid])->setInc('score',$rand);
+			$row = D('Member')->where(['uid'=>$uid])->select();
+			S($key,$row);
+			$this->success('签到成功');
+		}else{
+			$this->error('今天已经签到过了');
 		}
 
 	}
@@ -63,44 +95,64 @@ class UserController extends HomeController {
 
 	/* 登录页面 */
 	public function login($username = '', $password = '', $verify = ''){
-
-		if(IS_POST){ //登录验证
-			/* 检测验证码 */
-			if(!check_verify($verify)){
-				$this->error('验证码输入错误！');
-			}
-
-			/* 调用UC登录接口登录 */
-			$user = new UserApi;
-			$uid = $user->login($username, $password);
-			if(0 < $uid){ //UC登录成功
-				/* 登录用户 */
-				$Member = D('Member');
-				if($Member->login($uid)){ //登录用户
-					//TODO:跳转到登录前页面
-					//var_dump(session('call_back'));exit;
-					if(session('call_back')){
-						$this->success('登录成功',U(session('call_back')));
-					}else{
-						$this->success('登录成功！',U('Index/index'));
+		//如果有openid那就就去数据库查是否有该用户
+		if(session('openId')){
+			$Member = D('Member');
+			$rows = D('Member')->where(['openId'=>session('openId')])->find();
+			if( $rows!= null){
+				$Member->login($rows['uid']);
+				$this->redirect(session('call_back'));
+			//如果没有数据
+			}else{
+				//判断是否有数据
+				if(IS_POST){ //登录验证
+					/* 检测验证码 */
+					if(!check_verify($verify)){
+						$this->error('验证码输入错误！');
 					}
 
-				} else {
-					$this->error($Member->getError());
-				}
+					/* 调用UC登录接口登录 */
+					$user = new UserApi;
+					$uid = $user->login($username, $password);
+					if(0 < $uid){ //UC登录成功
+						/* 登录用户 */
 
-			} else { //登录失败
-				switch($uid) {
-					case -1: $error = '用户不存在或被禁用！'; break; //系统级别禁用
-					case -2: $error = '密码错误！'; break;
-					default: $error = '未知错误！'; break; // 0-接口参数错误（调试阶段使用）
+						//登录成功后将openId保存到数据库
+						$Member->where(['uid'=>$uid])->setField('openId',session('openId'));
+
+						if($Member->login($uid)){ //登录用户
+							//TODO:跳转到登录前页面
+							//var_dump(session('call_back'));exit;
+							if(session('call_back')){
+								$this->success('登录成功',U(session('call_back')));
+							}else{
+								$this->success('登录成功！',U('Index/index'));
+							}
+						} else {
+							$this->error($Member->getError());
+						}
+
+					} else { //登录失败
+						switch($uid) {
+							case -1: $error = '用户不存在或被禁用！'; break; //系统级别禁用
+							case -2: $error = '密码错误！'; break;
+							default: $error = '未知错误！'; break; // 0-接口参数错误（调试阶段使用）
+						}
+						$this->error($error);
+					}
+
+				} else { //显示登录表单
+					$this->display();
 				}
-				$this->error($error);
 			}
 
-		} else { //显示登录表单
-			$this->display();
+		//如果没有openid就授权
+		}else{
+			//设置回调界面
+			session('back','User/login');
+			$this->redirect('Wechat/server');
 		}
+
 	}
 
 	/* 退出登录 */
@@ -176,5 +228,35 @@ class UserController extends HomeController {
             $this->display();
         }
     }
+	//我的报修单
+	public function repair(){
+		$name = I('name');
+		//查出所有数据
+		$rows = D('Repair')->where(['name'=>$name,'status>-1'])->select();
+
+		int_to_string($rows,array('status'=>array(0=>'待接收处理',1=>'正在处理',2=>'已处理')));
+		$this->assign('rows',$rows);
+		$this->display();
+	}
+	//我参加的活动
+	public function action(){
+		//接收传值
+		$uid = I('id');
+		//根据用户id查出数据
+		$rows = D('Areaaction')->where(['member_id'=>$uid,'status>0'])->select();
+		int_to_string($rows,['status'=>['0'=>'删除','1'=>'待审核',2=>'已审核']]);
+		//int_to_string($rows,array('status'=>array(-1=>'删除',0=>'待审核',1=>'已审核')));
+		//循环赋值
+		foreach($rows as &$row){
+			$rs = D('Member')->where(['uid'=>$row['member_id']])->find();
+			$r = D('Document')->where(['id'=>$row['action_id']])->find();
+			//赋值
+			$row['title'] = $r['title'];
+			$row['name'] = $rs['nickname'];
+		}
+		// 分页显示输出
+		$this->assign('rows',$rows);
+		$this->display();
+	}
 
 }

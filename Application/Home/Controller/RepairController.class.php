@@ -27,7 +27,6 @@ class RepairController extends HomeController
     //新增保修单
     public function add()
     {
-
         if(is_login()){
             //判断提交方式
             if(IS_POST){

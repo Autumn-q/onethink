@@ -138,4 +138,123 @@ class ArticleController extends HomeController {
 		//展示页面
 		$this->display('businessContent');
 	}
+	//关于我们
+	public function aboutList()
+	{
+		//查询小区通知文章
+		$rows = D('Document')->where(['category_id'=>43])->page(I('p',1),C('LIST_ROWS'))->select();
+		//循环遍历赋值
+		foreach($rows as &$row){
+			$row['path'] = get_cover($row['cover_id'],'path');
+			$row['create_time'] = date('Y-m-d H:i:s',$row['create_time']);
+			$row['url'] = U('Article/aboutContent',['id'=>$row['id']]);
+		}
+		//判断是否为ajax请求
+		if(IS_AJAX){
+			if(empty($rows)){
+				$this->error('没有数据');
+			}else{
+				$this->success($rows);
+			}
+		}
+		//分配数据
+		$this->assign('rows',$rows);
+		//展示页面
+		$this->display();
+	}
+	//关于我们内容
+	public function aboutContent()
+	{
+		//给字段自增1
+		D('Document')->where(['id'=>I('id')])->setInc('view',1);
+		$row = D('Document')->find(I('id'));
+		$result = D('Document_article')->find(I('id'));
+		//根据查出的数据中的uid查出发布信息的用户
+		$rs = D('Member')->find($row['uid']);
+		//赋值
+		$row['content'] = $result['content'];
+		$row['name']=$rs['nickname'];
+		//分配数据
+		$this->assign('row',$row);
+		//展示页面
+		$this->display('aboutContent');
+	}
+	//生活贴士列表
+	public function articleList(){
+		//查询小区通知文章
+		$rows = D('Document')->where('category_id>39')->page(I('p',1),5)->select();
+		//循环遍历赋值
+		foreach($rows as &$row){
+			$row['path'] = get_cover($row['cover_id'],'path');
+			$row['create_time'] = date('Y-m-d H:i:s',$row['create_time']);
+			$row['url'] = U('Article/articleContent',['id'=>$row['id']]);
+		}
+		//判断是否为ajax请求
+		if(IS_AJAX){
+			if(empty($rows)){
+				$this->error('没有数据');
+			}else{
+				$this->success($rows);
+			}
+		}
+		//分配数据
+		$this->assign('rows',$rows);
+		//展示页面
+		$this->display();
+	}
+	//生活贴士内容
+	public function articleContent()
+	{
+		//给字段自增1
+		D('Document')->where(['id'=>I('id')])->setInc('view',1);
+		$row = D('Document')->find(I('id'));
+		$result = D('Document_article')->find(I('id'));
+		//根据查出的数据中的uid查出发布信息的用户
+		$rs = D('Member')->find($row['uid']);
+		//赋值
+		$row['content'] = $result['content'];
+		$row['name']=$rs['nickname'];
+		//分配数据
+		$this->assign('row',$row);
+		//展示页面
+		$this->display('articleContent');
+	}
+	//租列表
+	public function zushouList(){
+		//查出租房信息
+		$rows = D('Document')->where(['category_id'=>44,'level'=>1])->select();
+
+		//循环遍历赋值
+		foreach($rows as &$row){
+			$row['path'] = get_cover($row['cover_id'],'path');
+			$row['create_time'] = date('Y-m-d H:i:s',$row['create_time']);
+			$row['url'] = U('Article/zushouContent',['id'=>$row['id']]);
+		}
+
+		//查出售房信息
+		$rs = D('Document')->where(['category_id'=>44,'level'=>2])->select();
+		//循环遍历赋值
+		foreach($rs as &$r){
+			$r['path'] = get_cover($r['cover_id'],'path');
+			$r['create_time'] = date('Y-m-d H:i:s',$r['create_time']);
+			$r['url'] = U('Article/zushouContent',['id'=>$r['id']]);
+		}
+		$this->assign('rows',$rows);
+		$this->assign('rs',$rs);
+		$this->display();
+	}
+	//租售详情
+	public function zushouContent(){
+		$row = D('Document')->find(I('id'));
+		$result = D('Document_article')->find(I('id'));
+		//根据查出的数据中的uid查出发布信息的用户
+		$rs = D('Member')->find($row['uid']);
+		//赋值
+		$row['content'] = $result['content'];
+		$row['name']=$rs['nickname'];
+		//分配数据
+		$this->assign('row',$row);
+		//展示页面
+		$this->display('articleContent');
+	}
 }
